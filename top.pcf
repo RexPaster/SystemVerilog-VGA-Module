@@ -1,0 +1,12 @@
+# Pin constraints for top.sv on Upduino 3.1 (iCE40UP5K-SG48)
+# Syntax: set_io <port_name> <pin_number>
+# Full pin map: https://upduino.readthedocs.io/en/latest/features/pins.html
+
+set_io clk_12mhz   10
+set_io rst_n       12
+
+# TODO: add your pin constraints here
+# Example:
+# set_io led_r       41
+# set_io led_g       40
+# set_io led_b       39
