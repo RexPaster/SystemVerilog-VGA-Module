@@ -1,12 +1,37 @@
-# Pin constraints for top.sv on Upduino 3.1 (iCE40UP5K-SG48)
-# Syntax: set_io <port_name> <pin_number>
-# Full pin map: https://upduino.readthedocs.io/en/latest/features/pins.html
+set_io clk_12mhz 20
 
-set_io clk_12mhz   10
-set_io rst_n       12
+set_io rst_n 12
 
-# TODO: add your pin constraints here
-# Example:
-# set_io led_r       41
-# set_io led_g       40
-# set_io led_b       39
+# Onboard SPI flash interface (assumed UPduino 3.1 mapping)
+set_io rom_spi_miso 14
+set_io rom_spi_sck  15
+set_io rom_spi_cs_n 16
+set_io rom_spi_mosi 17
+
+set_io vga_r[3] 13
+
+set_io vga_r[2] 21
+
+set_io vga_r[1] 12
+
+set_io vga_r[0] 3
+
+set_io vga_g[3] 9
+
+set_io vga_g[2] 11
+
+set_io vga_g[1] 18
+
+set_io vga_g[0] 19
+
+set_io vga_b[3] 4
+
+set_io vga_b[2] 47
+
+set_io vga_b[1] 45
+
+set_io vga_b[0] 48
+
+set_io vga_hs 46
+
+set_io vga_vs 2
