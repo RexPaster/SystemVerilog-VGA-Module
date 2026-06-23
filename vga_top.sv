@@ -4,7 +4,6 @@ module vga_top #(
     input  logic       clk_12mhz,
     input  logic       rst_n,
 
-    // External framebuffer read interface (Hack screen word format).
     input  logic [12:0] fb_read_addr,
     output logic [15:0] fb_read_data,
 
@@ -41,14 +40,32 @@ module vga_top #(
     // Reset synchroniser: async assert, sync de-assert on clk.
     // Holds design in reset until the PLL has locked.
     // ---------------------------------------------------------------
-    logic [1:0] rst_pipe;
     logic       srst_n;
 
-    always_ff @(posedge clk_25mhz or negedge rst_n) begin
-        if (!rst_n) rst_pipe <= 2'b00;
-        else        rst_pipe <= {rst_pipe[0], 1'b1};
-    end
-    assign srst_n = rst_pipe[1];
+    generate
+        if (SIMULATION) begin : g_rst_sim
+            logic [1:0] rst_pipe;
+
+            always_ff @(posedge clk_25mhz or negedge rst_n) begin
+                if (!rst_n) rst_pipe <= 2'b00;
+                else        rst_pipe <= {rst_pipe[0], 1'b1};
+            end
+
+            assign srst_n = rst_pipe[1] & pll_locked;
+        end else begin : g_rst_hw
+            logic [15:0] por_ctr = 16'h0000;
+
+            always_ff @(posedge clk_12mhz) begin
+                if (!pll_locked) begin
+                    por_ctr <= 16'h0000;
+                end else if (!por_ctr[15]) begin
+                    por_ctr <= por_ctr + 16'h0001;
+                end
+            end
+
+            assign srst_n = por_ctr[15] & pll_locked;
+        end
+    endgenerate
 
     // ---------------------------------------------------------------
     // VGA timing generator
@@ -126,9 +143,9 @@ module vga_top #(
             vga_hs <= 1'b1;
             vga_vs <= 1'b1;
         end else begin
+            mono_on <= pixel_on;
             vga_hs <= hs_n;
             vga_vs <= vs_n;
-            mono_on <= pixel_on;
         end
     end
 

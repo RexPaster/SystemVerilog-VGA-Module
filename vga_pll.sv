@@ -26,8 +26,8 @@ module vga_pll #(
                 .FILTER_RANGE  (3'b001)   // 10–20 MHz reference band
             ) pll (
                 .REFERENCECLK (clk_12mhz),
-                .PLLOUTCORE   (clk_vga),
-                .PLLOUTGLOBAL (),
+                .PLLOUTCORE   (),
+                .PLLOUTGLOBAL (clk_vga),
                 .LOCK         (pll_locked),
                 .EXTFEEDBACK  (1'b0),
                 .DYNAMICDELAY (8'b0),

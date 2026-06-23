@@ -96,7 +96,7 @@ FIRMWARE_JSON=$(FIRMWARE_PATH)/firmware.json
 %.bin: FORCE
 >     @echo "Building $(@:.bin=) using $(filter %.sv, $^)"
 >     @if [ -z "$(filter %.pcf, $^)" ]; then echo "No PCF file found"; exit 1; fi
->     yosys -p "read_verilog -sv  $(filter %.sv, $^) ; $(YOSYS_HIERARCHY); synth_ice40 -spram -json $(@:.bin=.json); tee -q -o $(@:.bin=.stats.json) stat -json;"
+>     yosys -p "read_verilog -sv -DSIMULATION=0 $(filter %.sv, $^) ; $(YOSYS_HIERARCHY); synth_ice40 -spram -json $(@:.bin=.json); tee -q -o $(@:.bin=.stats.json) stat -json;"
 >     nextpnr-ice40 --up5k --package sg48 --pcf $(filter %.pcf, $^) --json $(@:.bin=.json) --asc $(@:.bin=.asc)
 >     icepack $(@:.bin=.asc) $@
 
@@ -107,13 +107,13 @@ FIRMWARE_JSON=$(FIRMWARE_PATH)/firmware.json
 %.placed.svg:
 >     @echo "Building Placement SVG $@ using $(filter %.sv, $^)"
 >     @if [ -z "$(filter %.pcf, $^)" ]; then echo "No PCF file found"; exit 1; fi
->     yosys -p "read_verilog -sv  $(filter %.sv, $^) ; $(YOSYS_HIERARCHY); synth_ice40 -spram -json $(@:.placed.svg=.json); tee -q -o $(@:.bin=.stats.json) stat -json;"
+>     yosys -p "read_verilog -sv -DSIMULATION=0 $(filter %.sv, $^) ; $(YOSYS_HIERARCHY); synth_ice40 -spram -json $(@:.placed.svg=.json); tee -q -o $(@:.bin=.stats.json) stat -json;"
 >     nextpnr-ice40 --up5k --package sg48 --pcf $(filter %.pcf, $^) --json $(@:.placed.svg=.json) --placed-svg $@ --asc $(@:.placed.svg=.asc) --report $(@:.placed.svg=.report.json)
 
 %.routed.svg:
 >     @echo "Building Placement SVG $@ using $(filter %.sv, $^)"
 >     @if [ -z "$(filter %.pcf, $^)" ]; then echo "No PCF file found"; exit 1; fi
->     yosys -p "read_verilog -sv  $(filter %.sv, $^) ; $(YOSYS_HIERARCHY); synth_ice40 -spram -json $(@:.routed.svg=.json); tee -q -o $(@:.bin=.stats.json) stat -json;"
+>     yosys -p "read_verilog -sv -DSIMULATION=0 $(filter %.sv, $^) ; $(YOSYS_HIERARCHY); synth_ice40 -spram -json $(@:.routed.svg=.json); tee -q -o $(@:.bin=.stats.json) stat -json;"
 >     nextpnr-ice40 --up5k --package sg48 --pcf $(filter %.pcf, $^) --json $(@:.routed.svg=.json) --routed-svg $@ --asc $(@:.routed.svg=.asc) --report $(@:.routed.svg=.report.json)
 
 

@@ -65,6 +65,24 @@ module top #(
     localparam int FB_WORDS      = 7680;
     localparam int WORDS_PER_ROW = 32;
 
+    logic sys_rst_n;
+
+    generate
+        if (SIMULATION) begin : g_rst_sim
+            assign sys_rst_n = rst_n;
+        end else begin : g_rst_hw
+            logic [15:0] por_ctr = 16'h0000;
+
+            always_ff @(posedge clk_12mhz) begin
+                if (!por_ctr[15]) begin
+                    por_ctr <= por_ctr + 16'h0001;
+                end
+            end
+
+            assign sys_rst_n = por_ctr[15];
+        end
+    endgenerate
+
     logic [12:0] fb_write_addr;
     logic        fb_write_en;
     logic [15:0] fb_write_data;
@@ -102,8 +120,8 @@ module top #(
         stripe = x_word[1] ^ y[3];
     end
 
-    always_ff @(posedge clk_12mhz or negedge rst_n) begin
-        if (!rst_n) begin
+    always_ff @(posedge clk_12mhz or negedge sys_rst_n) begin
+        if (!sys_rst_n) begin
             addr_counter  <= 13'd0;
             fb_write_addr <= 13'd0;
             fb_write_data <= 16'h0000;
@@ -128,10 +146,10 @@ module top #(
     end
 
     vga_top #(
-        .SIMULATION(SIMULATION)
+            .SIMULATION(SIMULATION)
     ) vga_top (
         .clk_12mhz(clk_12mhz),
-        .rst_n(rst_n),
+        .rst_n(sys_rst_n),
 
         .fb_read_addr(fb_read_addr),
         .fb_read_data(fb_read_data),
